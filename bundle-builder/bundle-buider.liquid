@@ -1,0 +1,1512 @@
+{% assign wsp_gen_id = section.id | replace: '_', '' | replace: '-', '' | downcase %}
+
+{% style %}
+  .wsp-bundle-builder-{{ wsp_gen_id }} {
+    display: block;
+    width: 100%;
+    background-color: {{ section.settings.section_bg_color }};
+    padding: {{ section.settings.section_padding_top }}px 20px {{ section.settings.section_padding_bottom }}px;
+  }
+
+  .wsp-bundle-container-{{ wsp_gen_id }} {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 40px;
+  }
+
+  .wsp-bundle-left-{{ wsp_gen_id }} {
+    min-width: 0;
+  }
+
+  .wsp-bundle-tabs-{{ wsp_gen_id }} {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    border-bottom: 2px solid {{ section.settings.border_color }};
+    padding-bottom: 0;
+  }
+
+  .wsp-bundle-tab-{{ wsp_gen_id }} {
+    background: transparent;
+    border: none;
+    padding: 14px 28px;
+    cursor: pointer;
+    font-size: {{ section.settings.tab_font_size }}px;
+    font-weight: 600;
+    color: {{ section.settings.tab_text_color }};
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
+    bottom: -2px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .wsp-bundle-tab-{{ wsp_gen_id }}:hover {
+    color: {{ section.settings.tab_active_color }};
+  }
+
+  .wsp-bundle-tab-{{ wsp_gen_id }}.active {
+    color: {{ section.settings.tab_active_color }};
+    border-bottom-color: {{ section.settings.tab_active_color }};
+  }
+
+  .wsp-bundle-collection-{{ wsp_gen_id }} {
+    display: none;
+  }
+
+  .wsp-bundle-collection-{{ wsp_gen_id }}.active {
+    display: block;
+  }
+
+  .wsp-bundle-grid-{{ wsp_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax({{ section.settings.card_min_width }}px, 1fr));
+    gap: {{ section.settings.grid_gap }}px;
+  }
+
+  .wsp-bundle-card-{{ wsp_gen_id }} {
+    background: {{ section.settings.card_bg_color }};
+    border-radius: {{ section.settings.card_border_radius }}px;
+    overflow: hidden;
+    box-shadow: {{ section.settings.card_shadow }};
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .wsp-bundle-card-{{ wsp_gen_id }}:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .wsp-bundle-card-image-{{ wsp_gen_id }} {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+
+  .wsp-bundle-card-image-{{ wsp_gen_id }} img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s ease;
+  }
+
+  .wsp-bundle-card-image-{{ wsp_gen_id }} img.secondary {
+    opacity: 0;
+  }
+
+  .wsp-bundle-card-{{ wsp_gen_id }}:hover .wsp-bundle-card-image-{{ wsp_gen_id }} img.primary {
+    opacity: 0;
+  }
+
+  .wsp-bundle-card-{{ wsp_gen_id }}:hover .wsp-bundle-card-image-{{ wsp_gen_id }} img.secondary {
+    opacity: 1;
+  }
+
+  .wsp-bundle-badge-{{ wsp_gen_id }} {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: {{ section.settings.badge_bg_color }};
+    color: {{ section.settings.badge_text_color }};
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .wsp-bundle-card-content-{{ wsp_gen_id }} {
+    padding: 16px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .wsp-bundle-card-vendor-{{ wsp_gen_id }} {
+    font-size: 12px;
+    color: {{ section.settings.vendor_text_color }};
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .wsp-bundle-card-title-{{ wsp_gen_id }} {
+    font-size: {{ section.settings.product_title_size }}px;
+    color: {{ section.settings.primary_text_color }};
+    margin: 0 0 12px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .wsp-bundle-card-price-{{ wsp_gen_id }} {
+    font-size: {{ section.settings.price_font_size }}px;
+    color: {{ section.settings.primary_text_color }};
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+
+  .wsp-bundle-variant-select-{{ wsp_gen_id }} {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid {{ section.settings.border_color }};
+    border-radius: {{ section.settings.input_border_radius }}px;
+    font-size: 14px;
+    margin-bottom: 12px;
+    background: white;
+    cursor: pointer;
+  }
+
+  .wsp-bundle-add-btn-{{ wsp_gen_id }} {
+    width: 100%;
+    padding: 12px 24px;
+    background: {{ section.settings.button_bg_color }};
+    color: {{ section.settings.button_text_color }};
+    border: none;
+    border-radius: {{ section.settings.button_border_radius }}px;
+    font-size: {{ section.settings.button_font_size }}px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .wsp-bundle-add-btn-{{ wsp_gen_id }}:hover:not(:disabled) {
+    background: {{ section.settings.button_hover_color }};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .wsp-bundle-add-btn-{{ wsp_gen_id }}:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .wsp-bundle-right-{{ wsp_gen_id }} {
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+  }
+
+  .wsp-bundle-widget-{{ wsp_gen_id }} {
+    background: {{ section.settings.widget_bg_color }};
+    border-radius: {{ section.settings.widget_border_radius }}px;
+    padding: 28px;
+    box-shadow: {{ section.settings.widget_shadow }};
+  }
+
+  .wsp-bundle-widget-title-{{ wsp_gen_id }} {
+    font-size: {{ section.settings.widget_title_size }}px;
+    color: {{ section.settings.primary_text_color }};
+    margin: 0 0 8px;
+    font-weight: 700;
+  }
+
+  .wsp-bundle-widget-subtitle-{{ wsp_gen_id }} {
+    font-size: {{ section.settings.widget_subtitle_size }}px;
+    color: {{ section.settings.secondary_text_color }};
+    margin: 0 0 24px;
+  }
+
+  .wsp-bundle-slots-{{ wsp_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .wsp-bundle-slot-{{ wsp_gen_id }} {
+    aspect-ratio: 1;
+    border: 2px dashed {{ section.settings.border_color }};
+    border-radius: {{ section.settings.slot_border_radius }}px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: #fafafa;
+    transition: all 0.3s ease;
+  }
+
+  .wsp-bundle-slot-{{ wsp_gen_id }}.filled {
+    border-style: solid;
+    border-color: {{ section.settings.accent_color }};
+    background: white;
+  }
+
+  .wsp-bundle-slot-{{ wsp_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: {{ section.settings.slot_border_radius }}px;
+  }
+
+  .wsp-bundle-slot-remove-{{ wsp_gen_id }} {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 24px;
+    height: 24px;
+    background: {{ section.settings.remove_btn_color }};
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+  }
+
+  .wsp-bundle-slot-remove-{{ wsp_gen_id }}:hover {
+    transform: scale(1.1);
+  }
+
+  .wsp-bundle-tiers-{{ wsp_gen_id }} {
+    margin-bottom: 24px;
+  }
+
+  .wsp-bundle-tier-{{ wsp_gen_id }} {
+    display: flex;
+    align-items: center;
+    padding: 14px;
+    border: 2px solid {{ section.settings.border_color }};
+    border-radius: {{ section.settings.tier_border_radius }}px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .wsp-bundle-tier-{{ wsp_gen_id }}:hover {
+    border-color: {{ section.settings.accent_color }};
+    background: #f9f9f9;
+  }
+
+  .wsp-bundle-tier-{{ wsp_gen_id }}.active {
+    border-color: {{ section.settings.accent_color }};
+    background: {{ section.settings.tier_active_bg }};
+  }
+
+  .wsp-bundle-tier-{{ wsp_gen_id }} input[type="radio"] {
+    margin-right: 12px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+
+  .wsp-bundle-tier-label-{{ wsp_gen_id }} {
+    flex-grow: 1;
+    font-size: 15px;
+    font-weight: 600;
+    color: {{ section.settings.primary_text_color }};
+  }
+
+  .wsp-bundle-tier-discount-{{ wsp_gen_id }} {
+    background: {{ section.settings.discount_badge_bg }};
+    color: {{ section.settings.discount_badge_text }};
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .wsp-bundle-pricing-{{ wsp_gen_id }} {
+    background: #f9f9f9;
+    padding: 18px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+
+  .wsp-bundle-price-row-{{ wsp_gen_id }} {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 15px;
+  }
+
+  .wsp-bundle-price-label-{{ wsp_gen_id }} {
+    color: {{ section.settings.secondary_text_color }};
+  }
+
+  .wsp-bundle-price-original-{{ wsp_gen_id }} {
+    text-decoration: line-through;
+    color: {{ section.settings.secondary_text_color }};
+  }
+
+  .wsp-bundle-price-final-{{ wsp_gen_id }} {
+    font-size: 24px;
+    font-weight: 700;
+    color: {{ section.settings.accent_color }};
+  }
+
+  .wsp-bundle-checkout-btn-{{ wsp_gen_id }} {
+    width: 100%;
+    padding: 16px 24px;
+    background: {{ section.settings.checkout_btn_bg }};
+    color: {{ section.settings.checkout_btn_text }};
+    border: none;
+    border-radius: {{ section.settings.button_border_radius }}px;
+    font-size: {{ section.settings.button_font_size }}px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .wsp-bundle-checkout-btn-{{ wsp_gen_id }}:hover:not(:disabled) {
+    background: {{ section.settings.checkout_btn_hover }};
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .wsp-bundle-checkout-btn-{{ wsp_gen_id }}:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  @media screen and (max-width: 1024px) {
+    .wsp-bundle-container-{{ wsp_gen_id }} {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .wsp-bundle-right-{{ wsp_gen_id }} {
+      position: static;
+      order: 2;
+    }
+
+    .wsp-bundle-left-{{ wsp_gen_id }} {
+      order: 1;
+      margin-bottom: 0;
+    }
+
+    .wsp-bundle-widget-{{ wsp_gen_id }} {
+      position: relative;
+      background: {{ section.settings.widget_bg_color }};
+      box-shadow: {{ section.settings.widget_shadow }};
+      padding: 24px;
+      border-radius: {{ section.settings.widget_border_radius }}px;
+    }
+
+    .wsp-bundle-widget-title-{{ wsp_gen_id }} {
+      font-size: {{ section.settings.widget_title_size | times: 0.9 }}px;
+      margin-bottom: 6px;
+    }
+
+    .wsp-bundle-widget-subtitle-{{ wsp_gen_id }} {
+      font-size: {{ section.settings.widget_subtitle_size | times: 0.95 }}px;
+      margin-bottom: 20px;
+    }
+
+    .wsp-bundle-slots-{{ wsp_gen_id }} {
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .wsp-bundle-tiers-{{ wsp_gen_id }} {
+      margin-bottom: 20px;
+    }
+
+    .wsp-bundle-tier-{{ wsp_gen_id }} {
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
+    .wsp-bundle-tier-label-{{ wsp_gen_id }} {
+      font-size: 14px;
+    }
+
+    .wsp-bundle-tier-discount-{{ wsp_gen_id }} {
+      font-size: 12px;
+      padding: 4px 8px;
+    }
+
+    .wsp-bundle-pricing-{{ wsp_gen_id }} {
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .wsp-bundle-price-row-{{ wsp_gen_id }} {
+      font-size: 14px;
+    }
+
+    .wsp-bundle-price-final-{{ wsp_gen_id }} {
+      font-size: 22px;
+    }
+
+    .wsp-bundle-checkout-btn-{{ wsp_gen_id }} {
+      padding: 14px 20px;
+      font-size: {{ section.settings.button_font_size | times: 0.95 }}px;
+    }
+
+    .wsp-bundle-grid-{{ wsp_gen_id }} {
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+    }
+
+    .wsp-bundle-tab-{{ wsp_gen_id }} {
+      font-size: {{ section.settings.tab_font_size | times: 0.9 }}px;
+      padding: 12px 20px;
+    }
+  }
+
+  @media screen and (max-width: 640px) {
+    .wsp-bundle-builder-{{ wsp_gen_id }} {
+      padding: {{ section.settings.section_padding_top | times: 0.7 }}px 16px {{ section.settings.section_padding_bottom | times: 0.7 }}px;
+    }
+
+    .wsp-bundle-grid-{{ wsp_gen_id }} {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .wsp-bundle-card-title-{{ wsp_gen_id }} {
+      font-size: {{ section.settings.product_title_size | times: 0.9 }}px;
+    }
+
+    .wsp-bundle-card-price-{{ wsp_gen_id }} {
+      font-size: {{ section.settings.price_font_size | times: 0.95 }}px;
+    }
+
+    .wsp-bundle-card-vendor-{{ wsp_gen_id }} {
+      font-size: 11px;
+    }
+
+    .wsp-bundle-add-btn-{{ wsp_gen_id }} {
+      padding: 10px 16px;
+      font-size: {{ section.settings.button_font_size | times: 0.9 }}px;
+    }
+
+    .wsp-bundle-widget-{{ wsp_gen_id }} {
+      padding: 20px 16px;
+    }
+
+    .wsp-bundle-widget-title-{{ wsp_gen_id }} {
+      font-size: {{ section.settings.widget_title_size | times: 0.85 }}px;
+    }
+
+    .wsp-bundle-widget-subtitle-{{ wsp_gen_id }} {
+      font-size: {{ section.settings.widget_subtitle_size | times: 0.9 }}px;
+      margin-bottom: 16px;
+    }
+
+    .wsp-bundle-slots-{{ wsp_gen_id }} {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .wsp-bundle-tier-{{ wsp_gen_id }} {
+      padding: 10px 12px;
+    }
+
+    .wsp-bundle-tier-{{ wsp_gen_id }} input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      margin-right: 10px;
+    }
+
+    .wsp-bundle-tier-label-{{ wsp_gen_id }} {
+      font-size: 13px;
+    }
+
+    .wsp-bundle-tier-discount-{{ wsp_gen_id }} {
+      font-size: 11px;
+      padding: 3px 8px;
+    }
+
+    .wsp-bundle-pricing-{{ wsp_gen_id }} {
+      padding: 14px;
+    }
+
+    .wsp-bundle-price-row-{{ wsp_gen_id }} {
+      font-size: 13px;
+    }
+
+    .wsp-bundle-price-final-{{ wsp_gen_id }} {
+      font-size: 20px;
+    }
+
+    .wsp-bundle-tabs-{{ wsp_gen_id }} {
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .wsp-bundle-tab-{{ wsp_gen_id }} {
+      font-size: {{ section.settings.tab_font_size | times: 0.8 }}px;
+      padding: 10px 16px;
+    }
+  }
+{% endstyle %}
+
+<bundle-builder-{{ wsp_gen_id }} class="wsp-bundle-builder-{{ wsp_gen_id }}">
+  <div class="wsp-bundle-container-{{ wsp_gen_id }}">
+    <div class="wsp-bundle-left-{{ wsp_gen_id }}">
+      <div class="wsp-bundle-tabs-{{ wsp_gen_id }}">
+        {% if section.settings.collection_1 != blank %}
+          <button class="wsp-bundle-tab-{{ wsp_gen_id }} active" data-collection="1">
+            {{ section.settings.collection_1.title }}
+          </button>
+        {% endif %}
+        {% if section.settings.collection_2 != blank %}
+          <button class="wsp-bundle-tab-{{ wsp_gen_id }}" data-collection="2">
+            {{ section.settings.collection_2.title }}
+          </button>
+        {% endif %}
+        {% if section.settings.collection_3 != blank %}
+          <button class="wsp-bundle-tab-{{ wsp_gen_id }}" data-collection="3">
+            {{ section.settings.collection_3.title }}
+          </button>
+        {% endif %}
+      </div>
+
+      {% if section.settings.collection_1 != blank %}
+        <div class="wsp-bundle-collection-{{ wsp_gen_id }} active" data-collection="1">
+          <div class="wsp-bundle-grid-{{ wsp_gen_id }}">
+            {% for product in section.settings.collection_1.products limit: 20 %}
+              <div class="wsp-bundle-card-{{ wsp_gen_id }}" data-product-id="{{ product.id }}">
+                <div class="wsp-bundle-card-image-{{ wsp_gen_id }}">
+                  {% if product.available == false %}
+                    <span class="wsp-bundle-badge-{{ wsp_gen_id }}">Sold Out</span>
+                  {% endif %}
+                  {% if product.featured_image %}
+                    <img class="primary" src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title | escape }}" loading="lazy">
+                    {% if product.images[1] %}
+                      <img class="secondary" src="{{ product.images[1] | image_url: width: 400 }}" alt="{{ product.title | escape }}" loading="lazy">
+                    {% endif %}
+                  {% endif %}
+                </div>
+                <div class="wsp-bundle-card-content-{{ wsp_gen_id }}">
+                  {% if product.vendor != blank %}
+                    <div class="wsp-bundle-card-vendor-{{ wsp_gen_id }}">{{ product.vendor }}</div>
+                  {% endif %}
+                  <h3 class="wsp-bundle-card-title-{{ wsp_gen_id }}">{{ product.title }}</h3>
+                  <div class="wsp-bundle-card-price-{{ wsp_gen_id }}" data-price="{{ product.selected_or_first_available_variant.price }}">
+                    {{ product.selected_or_first_available_variant.price | money }}
+                  </div>
+                  {% if product.has_only_default_variant %}
+                    <input type="hidden" class="wsp-bundle-variant-input-{{ wsp_gen_id }}" value="{{ product.selected_or_first_available_variant.id }}" data-price="{{ product.selected_or_first_available_variant.price }}" data-available="{{ product.selected_or_first_available_variant.available }}">
+                  {% else %}
+                    <select class="wsp-bundle-variant-select-{{ wsp_gen_id }}">
+                      {% for variant in product.variants %}
+                        <option value="{{ variant.id }}" data-price="{{ variant.price }}" data-available="{{ variant.available }}" {% if variant.available == false %}disabled{% endif %}>
+                          {{ variant.title }} - {{ variant.price | money }}
+                          {% if variant.available == false %} (Sold Out){% endif %}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  {% endif %}
+                  <button class="wsp-bundle-add-btn-{{ wsp_gen_id }}" {% if product.available == false %}disabled{% endif %}>
+                    {% if product.available %}Add{% else %}Sold Out{% endif %}
+                  </button>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if section.settings.collection_2 != blank %}
+        <div class="wsp-bundle-collection-{{ wsp_gen_id }}" data-collection="2">
+          <div class="wsp-bundle-grid-{{ wsp_gen_id }}">
+            {% for product in section.settings.collection_2.products limit: 20 %}
+              <div class="wsp-bundle-card-{{ wsp_gen_id }}" data-product-id="{{ product.id }}">
+                <div class="wsp-bundle-card-image-{{ wsp_gen_id }}">
+                  {% if product.available == false %}
+                    <span class="wsp-bundle-badge-{{ wsp_gen_id }}">Sold Out</span>
+                  {% endif %}
+                  {% if product.featured_image %}
+                    <img class="primary" src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title | escape }}" loading="lazy">
+                    {% if product.images[1] %}
+                      <img class="secondary" src="{{ product.images[1] | image_url: width: 400 }}" alt="{{ product.title | escape }}" loading="lazy">
+                    {% endif %}
+                  {% endif %}
+                </div>
+                <div class="wsp-bundle-card-content-{{ wsp_gen_id }}">
+                  {% if product.vendor != blank %}
+                    <div class="wsp-bundle-card-vendor-{{ wsp_gen_id }}">{{ product.vendor }}</div>
+                  {% endif %}
+                  <h3 class="wsp-bundle-card-title-{{ wsp_gen_id }}">{{ product.title }}</h3>
+                  <div class="wsp-bundle-card-price-{{ wsp_gen_id }}" data-price="{{ product.selected_or_first_available_variant.price }}">
+                    {{ product.selected_or_first_available_variant.price | money }}
+                  </div>
+                  {% if product.has_only_default_variant %}
+                    <input type="hidden" class="wsp-bundle-variant-input-{{ wsp_gen_id }}" value="{{ product.selected_or_first_available_variant.id }}" data-price="{{ product.selected_or_first_available_variant.price }}" data-available="{{ product.selected_or_first_available_variant.available }}">
+                  {% else %}
+                    <select class="wsp-bundle-variant-select-{{ wsp_gen_id }}">
+                      {% for variant in product.variants %}
+                        <option value="{{ variant.id }}" data-price="{{ variant.price }}" data-available="{{ variant.available }}" {% if variant.available == false %}disabled{% endif %}>
+                          {{ variant.title }} - {{ variant.price | money }}
+                          {% if variant.available == false %} (Sold Out){% endif %}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  {% endif %}
+                  <button class="wsp-bundle-add-btn-{{ wsp_gen_id }}" {% if product.available == false %}disabled{% endif %}>
+                    {% if product.available %}Add{% else %}Sold Out{% endif %}
+                  </button>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if section.settings.collection_3 != blank %}
+        <div class="wsp-bundle-collection-{{ wsp_gen_id }}" data-collection="3">
+          <div class="wsp-bundle-grid-{{ wsp_gen_id }}">
+            {% for product in section.settings.collection_3.products limit: 20 %}
+              <div class="wsp-bundle-card-{{ wsp_gen_id }}" data-product-id="{{ product.id }}">
+                <div class="wsp-bundle-card-image-{{ wsp_gen_id }}">
+                  {% if product.available == false %}
+                    <span class="wsp-bundle-badge-{{ wsp_gen_id }}">Sold Out</span>
+                  {% endif %}
+                  {% if product.featured_image %}
+                    <img class="primary" src="{{ product.featured_image | image_url: width: 400 }}" alt="{{ product.title | escape }}" loading="lazy">
+                    {% if product.images[1] %}
+                      <img class="secondary" src="{{ product.images[1] | image_url: width: 400 }}" alt="{{ product.title | escape }}" loading="lazy">
+                    {% endif %}
+                  {% endif %}
+                </div>
+                <div class="wsp-bundle-card-content-{{ wsp_gen_id }}">
+                  {% if product.vendor != blank %}
+                    <div class="wsp-bundle-card-vendor-{{ wsp_gen_id }}">{{ product.vendor }}</div>
+                  {% endif %}
+                  <h3 class="wsp-bundle-card-title-{{ wsp_gen_id }}">{{ product.title }}</h3>
+                  <div class="wsp-bundle-card-price-{{ wsp_gen_id }}" data-price="{{ product.selected_or_first_available_variant.price }}">
+                    {{ product.selected_or_first_available_variant.price | money }}
+                  </div>
+                  {% if product.has_only_default_variant %}
+                    <input type="hidden" class="wsp-bundle-variant-input-{{ wsp_gen_id }}" value="{{ product.selected_or_first_available_variant.id }}" data-price="{{ product.selected_or_first_available_variant.price }}" data-available="{{ product.selected_or_first_available_variant.available }}">
+                  {% else %}
+                    <select class="wsp-bundle-variant-select-{{ wsp_gen_id }}">
+                      {% for variant in product.variants %}
+                        <option value="{{ variant.id }}" data-price="{{ variant.price }}" data-available="{{ variant.available }}" {% if variant.available == false %}disabled{% endif %}>
+                          {{ variant.title }} - {{ variant.price | money }}
+                          {% if variant.available == false %} (Sold Out){% endif %}
+                        </option>
+                      {% endfor %}
+                    </select>
+                  {% endif %}
+                  <button class="wsp-bundle-add-btn-{{ wsp_gen_id }}" {% if product.available == false %}disabled{% endif %}>
+                    {% if product.available %}Add{% else %}Sold Out{% endif %}
+                  </button>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="wsp-bundle-right-{{ wsp_gen_id }}">
+      <div class="wsp-bundle-widget-{{ wsp_gen_id }}">
+        <h2 class="wsp-bundle-widget-title-{{ wsp_gen_id }}">{{ section.settings.widget_title }}</h2>
+        <p class="wsp-bundle-widget-subtitle-{{ wsp_gen_id }}">{{ section.settings.widget_subtitle }}</p>
+
+        <div class="wsp-bundle-slots-{{ wsp_gen_id }}" data-max-slots="{{ section.settings.tier_3_count }}">
+        </div>
+
+        <div class="wsp-bundle-tiers-{{ wsp_gen_id }}">
+          <div class="wsp-bundle-tier-{{ wsp_gen_id }}" data-count="{{ section.settings.tier_1_count }}" data-discount="{{ section.settings.tier_1_discount }}">
+            <input type="radio" name="tier-{{ wsp_gen_id }}" value="1">
+            <span class="wsp-bundle-tier-label-{{ wsp_gen_id }}">{{ section.settings.tier_1_name }}</span>
+            <span class="wsp-bundle-tier-discount-{{ wsp_gen_id }}">{{ section.settings.tier_1_discount }}% OFF</span>
+          </div>
+          <div class="wsp-bundle-tier-{{ wsp_gen_id }}" data-count="{{ section.settings.tier_2_count }}" data-discount="{{ section.settings.tier_2_discount }}">
+            <input type="radio" name="tier-{{ wsp_gen_id }}" value="2">
+            <span class="wsp-bundle-tier-label-{{ wsp_gen_id }}">{{ section.settings.tier_2_name }}</span>
+            <span class="wsp-bundle-tier-discount-{{ wsp_gen_id }}">{{ section.settings.tier_2_discount }}% OFF</span>
+          </div>
+          <div class="wsp-bundle-tier-{{ wsp_gen_id }}" data-count="{{ section.settings.tier_3_count }}" data-discount="{{ section.settings.tier_3_discount }}">
+            <input type="radio" name="tier-{{ wsp_gen_id }}" value="3">
+            <span class="wsp-bundle-tier-label-{{ wsp_gen_id }}">{{ section.settings.tier_3_name }}</span>
+            <span class="wsp-bundle-tier-discount-{{ wsp_gen_id }}">{{ section.settings.tier_3_discount }}% OFF</span>
+          </div>
+        </div>
+
+        <div class="wsp-bundle-pricing-{{ wsp_gen_id }}">
+          <div class="wsp-bundle-price-row-{{ wsp_gen_id }}">
+            <span class="wsp-bundle-price-label-{{ wsp_gen_id }}">Subtotal:</span>
+            <span class="wsp-bundle-price-original-{{ wsp_gen_id }}" data-original-price="0">{{ 0 | money }}</span>
+          </div>
+          <div class="wsp-bundle-price-row-{{ wsp_gen_id }}">
+            <span class="wsp-bundle-price-label-{{ wsp_gen_id }}">Discount:</span>
+            <span class="wsp-bundle-discount-amount-{{ wsp_gen_id }}" style="color: {{ section.settings.accent_color }}; font-weight: 600;">-{{ 0 | money }}</span>
+          </div>
+          <div class="wsp-bundle-price-row-{{ wsp_gen_id }}" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid {{ section.settings.border_color }};">
+            <span class="wsp-bundle-price-label-{{ wsp_gen_id }}" style="font-weight: 700; color: {{ section.settings.primary_text_color }};">Total:</span>
+            <span class="wsp-bundle-price-final-{{ wsp_gen_id }}" data-final-price="0">{{ 0 | money }}</span>
+          </div>
+        </div>
+
+        <button class="wsp-bundle-checkout-btn-{{ wsp_gen_id }}" disabled>
+          Pick {{ section.settings.tier_1_count }} Products
+        </button>
+      </div>
+    </div>
+  </div>
+</bundle-builder-{{ wsp_gen_id }}>
+
+<script>
+(function() {
+  class BundleBuilder{{ wsp_gen_id }} extends HTMLElement {
+    constructor() {
+      super();
+      this.bundleItems = [];
+      this.selectedTier = null;
+      this.tiers = [
+        { count: {{ section.settings.tier_1_count }}, discount: {{ section.settings.tier_1_discount }} },
+        { count: {{ section.settings.tier_2_count }}, discount: {{ section.settings.tier_2_discount }} },
+        { count: {{ section.settings.tier_3_count }}, discount: {{ section.settings.tier_3_discount }} }
+      ];
+    }
+
+    connectedCallback() {
+      this.setupTabs();
+      this.setupAddButtons();
+      this.setupTierSelection();
+      this.renderSlots();
+      this.updatePricing();
+    }
+
+    setupTabs() {
+      const tabs = this.querySelectorAll('.wsp-bundle-tab-{{ wsp_gen_id }}');
+      const collections = this.querySelectorAll('.wsp-bundle-collection-{{ wsp_gen_id }}');
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const collectionId = tab.dataset.collection;
+          
+          tabs.forEach(t => t.classList.remove('active'));
+          collections.forEach(c => c.classList.remove('active'));
+          
+          tab.classList.add('active');
+          this.querySelector(`.wsp-bundle-collection-{{ wsp_gen_id }}[data-collection="${collectionId}"]`).classList.add('active');
+        });
+      });
+    }
+
+    setupAddButtons() {
+      const addButtons = this.querySelectorAll('.wsp-bundle-add-btn-{{ wsp_gen_id }}');
+      
+      addButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          const card = e.target.closest('.wsp-bundle-card-{{ wsp_gen_id }}');
+          const variantSelect = card.querySelector('.wsp-bundle-variant-select-{{ wsp_gen_id }}');
+          const variantInput = card.querySelector('.wsp-bundle-variant-input-{{ wsp_gen_id }}');
+          
+          let variantId, price, available, image, title;
+          
+          if (variantSelect) {
+            const selectedOption = variantSelect.options[variantSelect.selectedIndex];
+            variantId = selectedOption.value;
+            price = parseInt(selectedOption.dataset.price);
+            available = selectedOption.dataset.available === 'true';
+          } else if (variantInput) {
+            variantId = variantInput.value;
+            price = parseInt(variantInput.dataset.price);
+            available = variantInput.dataset.available === 'true';
+          }
+          
+          const imgElement = card.querySelector('.wsp-bundle-card-image-{{ wsp_gen_id }} img.primary');
+          image = imgElement ? imgElement.src : '';
+          title = card.querySelector('.wsp-bundle-card-title-{{ wsp_gen_id }}').textContent;
+          
+          if (available && this.bundleItems.length < this.tiers[2].count) {
+            this.addItem({ variantId, price, image, title });
+          }
+        });
+      });
+
+      const variantSelects = this.querySelectorAll('.wsp-bundle-variant-select-{{ wsp_gen_id }}');
+      variantSelects.forEach(select => {
+        select.addEventListener('change', (e) => {
+          const card = e.target.closest('.wsp-bundle-card-{{ wsp_gen_id }}');
+          const selectedOption = e.target.options[e.target.selectedIndex];
+          const price = selectedOption.dataset.price;
+          const available = selectedOption.dataset.available === 'true';
+          const addButton = card.querySelector('.wsp-bundle-add-btn-{{ wsp_gen_id }}');
+          
+          card.querySelector('.wsp-bundle-card-price-{{ wsp_gen_id }}').textContent = selectedOption.textContent.split(' - ')[1].split(' (')[0];
+          
+          if (available) {
+            addButton.disabled = false;
+            addButton.textContent = 'Add';
+          } else {
+            addButton.disabled = true;
+            addButton.textContent = 'Sold Out';
+          }
+        });
+      });
+    }
+
+    setupTierSelection() {
+      const tierElements = this.querySelectorAll('.wsp-bundle-tier-{{ wsp_gen_id }}');
+      
+      tierElements.forEach((tier, index) => {
+        tier.addEventListener('click', () => {
+          tierElements.forEach(t => t.classList.remove('active'));
+          tier.classList.add('active');
+          tier.querySelector('input[type="radio"]').checked = true;
+          this.selectedTier = index;
+          this.updatePricing();
+          this.updateCheckoutButton();
+        });
+      });
+    }
+
+    addItem(item) {
+      if (this.bundleItems.length < this.tiers[2].count) {
+        this.bundleItems.push(item);
+        this.renderSlots();
+        this.autoSelectTier();
+        this.updatePricing();
+        this.updateCheckoutButton();
+      }
+    }
+
+    removeItem(index) {
+      this.bundleItems.splice(index, 1);
+      this.renderSlots();
+      this.autoSelectTier();
+      this.updatePricing();
+      this.updateCheckoutButton();
+    }
+
+    renderSlots() {
+      const slotsContainer = this.querySelector('.wsp-bundle-slots-{{ wsp_gen_id }}');
+      const maxSlots = this.tiers[2].count;
+      
+      slotsContainer.innerHTML = '';
+      
+      for (let i = 0; i < maxSlots; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'wsp-bundle-slot-{{ wsp_gen_id }}';
+        
+        if (this.bundleItems[i]) {
+          slot.classList.add('filled');
+          slot.innerHTML = `
+            <img src="${this.bundleItems[i].image}" alt="${this.bundleItems[i].title}">
+            <button class="wsp-bundle-slot-remove-{{ wsp_gen_id }}" data-index="${i}">×</button>
+          `;
+        }
+        
+        slotsContainer.appendChild(slot);
+      }
+      
+      const removeButtons = slotsContainer.querySelectorAll('.wsp-bundle-slot-remove-{{ wsp_gen_id }}');
+      removeButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          const index = parseInt(e.target.dataset.index);
+          this.removeItem(index);
+        });
+      });
+    }
+
+    autoSelectTier() {
+      const count = this.bundleItems.length;
+      const tierElements = this.querySelectorAll('.wsp-bundle-tier-{{ wsp_gen_id }}');
+      
+      tierElements.forEach(t => t.classList.remove('active'));
+      
+      if (count >= this.tiers[2].count) {
+        this.selectedTier = 2;
+        tierElements[2].classList.add('active');
+        tierElements[2].querySelector('input[type="radio"]').checked = true;
+      } else if (count >= this.tiers[1].count) {
+        this.selectedTier = 1;
+        tierElements[1].classList.add('active');
+        tierElements[1].querySelector('input[type="radio"]').checked = true;
+      } else if (count >= this.tiers[0].count) {
+        this.selectedTier = 0;
+        tierElements[0].classList.add('active');
+        tierElements[0].querySelector('input[type="radio"]').checked = true;
+      } else {
+        this.selectedTier = null;
+      }
+    }
+
+    updatePricing() {
+      const originalPrice = this.bundleItems.reduce((sum, item) => sum + item.price, 0);
+      const discount = this.selectedTier !== null ? this.tiers[this.selectedTier].discount : 0;
+      const discountAmount = Math.round(originalPrice * (discount / 100));
+      const finalPrice = originalPrice - discountAmount;
+      
+      this.querySelector('.wsp-bundle-price-original-{{ wsp_gen_id }}').textContent = this.formatMoney(originalPrice);
+      this.querySelector('.wsp-bundle-discount-amount-{{ wsp_gen_id }}').textContent = '-' + this.formatMoney(discountAmount);
+      this.querySelector('.wsp-bundle-price-final-{{ wsp_gen_id }}').textContent = this.formatMoney(finalPrice);
+    }
+
+    updateCheckoutButton() {
+      const button = this.querySelector('.wsp-bundle-checkout-btn-{{ wsp_gen_id }}');
+      const count = this.bundleItems.length;
+      
+      if (this.selectedTier !== null && count === this.tiers[this.selectedTier].count) {
+        button.disabled = false;
+        button.textContent = 'Add to Cart';
+      } else if (this.selectedTier !== null) {
+        const needed = this.tiers[this.selectedTier].count - count;
+        button.disabled = true;
+        button.textContent = `Pick ${needed} More Product${needed > 1 ? 's' : ''}`;
+      } else {
+        button.disabled = true;
+        button.textContent = `Pick ${this.tiers[0].count} Products`;
+      }
+      
+      if (!button.disabled) {
+        button.onclick = () => this.addToCart();
+      }
+    }
+
+    formatMoney(cents) {
+      const amount = cents / 100;
+      return '{{ cart.currency.symbol }}' + amount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    }
+
+    addToCart() {
+      const button = this.querySelector('.wsp-bundle-checkout-btn-{{ wsp_gen_id }}');
+      button.disabled = true;
+      button.textContent = 'Adding...';
+      
+      const discount = this.selectedTier !== null ? this.tiers[this.selectedTier].discount : 0;
+      
+      const items = this.bundleItems.map(item => {
+        const originalPrice = item.price;
+        const discountedPrice = Math.round(originalPrice * (1 - discount / 100));
+        
+        return {
+          id: item.variantId,
+          quantity: 1,
+          properties: {
+            '_bundle': 'Build a Box',
+            '_bundle_discount': discount + '%',
+            '_original_price': this.formatMoney(originalPrice),
+            '_discounted_price': this.formatMoney(discountedPrice)
+          }
+        };
+      });
+      
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ items })
+      })
+      .then(response => response.json())
+      .then(data => {
+        button.textContent = 'Added!';
+        setTimeout(() => {
+          window.location.href = '/cart';
+        }, 500);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        button.disabled = false;
+        button.textContent = 'Add to Cart';
+        alert('Error adding to cart. Please try again.');
+      });
+    }
+  }
+
+  customElements.define('bundle-builder-{{ wsp_gen_id }}', BundleBuilder{{ wsp_gen_id }});
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Bundle box builder",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Collections"
+    },
+    {
+      "type": "collection",
+      "id": "collection_1",
+      "label": "Collection 1"
+    },
+    {
+      "type": "collection",
+      "id": "collection_2",
+      "label": "Collection 2"
+    },
+    {
+      "type": "collection",
+      "id": "collection_3",
+      "label": "Collection 3"
+    },
+    {
+      "type": "header",
+      "content": "Bundle widget"
+    },
+    {
+      "type": "text",
+      "id": "widget_title",
+      "label": "Widget title",
+      "default": "Build Your Box"
+    },
+    {
+      "type": "text",
+      "id": "widget_subtitle",
+      "label": "Widget subtitle",
+      "default": "Select your favorite products and save"
+    },
+    {
+      "type": "header",
+      "content": "Discount tiers"
+    },
+    {
+      "type": "text",
+      "id": "tier_1_name",
+      "label": "Tier 1 name",
+      "default": "3-Pack Bundle"
+    },
+    {
+      "type": "range",
+      "id": "tier_1_count",
+      "label": "Tier 1 product count",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "tier_1_discount",
+      "label": "Tier 1 discount",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "%",
+      "default": 10
+    },
+    {
+      "type": "text",
+      "id": "tier_2_name",
+      "label": "Tier 2 name",
+      "default": "6-Pack Bundle"
+    },
+    {
+      "type": "range",
+      "id": "tier_2_count",
+      "label": "Tier 2 product count",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "tier_2_discount",
+      "label": "Tier 2 discount",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "%",
+      "default": 20
+    },
+    {
+      "type": "text",
+      "id": "tier_3_name",
+      "label": "Tier 3 name",
+      "default": "9-Pack Bundle"
+    },
+    {
+      "type": "range",
+      "id": "tier_3_count",
+      "label": "Tier 3 product count",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 9
+    },
+    {
+      "type": "range",
+      "id": "tier_3_discount",
+      "label": "Tier 3 discount",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "%",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Maximum width",
+      "min": 1000,
+      "max": 1600,
+      "step": 100,
+      "unit": "px",
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "section_padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "section_padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Grid gap",
+      "min": 8,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "card_min_width",
+      "label": "Card minimum width",
+      "min": 180,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "default": 220
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "widget_bg_color",
+      "label": "Widget background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "primary_text_color",
+      "label": "Primary text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "secondary_text_color",
+      "label": "Secondary text",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#000f9f"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "color",
+      "id": "tab_text_color",
+      "label": "Tab text",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_color",
+      "label": "Tab active",
+      "default": "#000f9f"
+    },
+    {
+      "type": "color",
+      "id": "vendor_text_color",
+      "label": "Vendor text",
+      "default": "#999999"
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Add button background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Add button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Add button hover",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "checkout_btn_bg",
+      "label": "Checkout button background",
+      "default": "#000f9f"
+    },
+    {
+      "type": "color",
+      "id": "checkout_btn_text",
+      "label": "Checkout button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "checkout_btn_hover",
+      "label": "Checkout button hover",
+      "default": "#000080"
+    },
+    {
+      "type": "color",
+      "id": "remove_btn_color",
+      "label": "Remove button",
+      "default": "#ff4444"
+    },
+    {
+      "type": "header",
+      "content": "Badges"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg_color",
+      "label": "Badge background",
+      "default": "#ff4444"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Badge text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "discount_badge_bg",
+      "label": "Discount badge background",
+      "default": "#00c853"
+    },
+    {
+      "type": "color",
+      "id": "discount_badge_text",
+      "label": "Discount badge text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "tier_active_bg",
+      "label": "Active tier background",
+      "default": "#f0f7ff"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "widget_title_size",
+      "label": "Widget title size",
+      "min": 18,
+      "max": 36,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "widget_subtitle_size",
+      "label": "Widget subtitle size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "product_title_size",
+      "label": "Product title size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "price_font_size",
+      "label": "Price size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "label": "Button text size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "tab_font_size",
+      "label": "Tab text size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Border radius"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Card",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "widget_border_radius",
+      "label": "Widget",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Button",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "input_border_radius",
+      "label": "Input",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "slot_border_radius",
+      "label": "Slot",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "tier_border_radius",
+      "label": "Tier",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Shadows"
+    },
+    {
+      "type": "select",
+      "id": "card_shadow",
+      "label": "Card shadow",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "0 2px 8px rgba(0,0,0,0.08)", "label": "Light" },
+        { "value": "0 4px 12px rgba(0,0,0,0.1)", "label": "Medium" },
+        { "value": "0 8px 24px rgba(0,0,0,0.12)", "label": "Strong" }
+      ],
+      "default": "0 2px 8px rgba(0,0,0,0.08)"
+    },
+    {
+      "type": "select",
+      "id": "widget_shadow",
+      "label": "Widget shadow",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "0 2px 8px rgba(0,0,0,0.08)", "label": "Light" },
+        { "value": "0 4px 12px rgba(0,0,0,0.1)", "label": "Medium" },
+        { "value": "0 8px 24px rgba(0,0,0,0.12)", "label": "Strong" }
+      ],
+      "default": "0 4px 12px rgba(0,0,0,0.1)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bundle box builder"
+    }
+  ]
+}
+{% endschema %}
